@@ -162,3 +162,112 @@ index.html
             var http = require('http');
             ```
           Voir l'exemple : https://nodejs.org/en/about/
+          
+#### Lancement du server http et traitement des requêtes HTTP
+1. OBJECTIF A : Réussir à lancer un serveur sur http://localhost:8000 (HTTP status = 200) 
+    - Test unitaire pour concevoir et vérifier l'implémenttion du fichier **server_0.js** 
+        1. Le server est bien lancé
+        1. Que le status de la HTTP Response est égal à 200
+        - Si mon fichier **server_0.js** se trouve à la racine du projet
+        - Si le fichier de serverSpec.js (contenant mes TU) se trouve dans le répertoire spec :
+            - Le template du fichier **spec/serverSpec.js** sera le suivant :
+
+            <pre>
+            var request = require('request');      
+            var server = require('../server_0');
+
+            describe("Lancement d'un server et status response 200 OK", function() {     
+                it("Start Server on http://localhost:8000 and error = false", function() {       
+  
+                });    
+            
+                it("http://localhost:8000/ returns response.statusCode = 200", function() {
+  
+                });
+            });
+            </pre>
+          
+        - Utilisation du module **request** : 
+                - Faire <code>npm install --save-dev request</code>
+                - La documentation se trouve sur le site https://www.npmjs.com/package/request
+                - Utilisation de la méthode request.get() pour faire un appel vers une URL
+        
+        - Utilisation Jasmine (cf. http://jasmine.github.io/2.4/introduction.html) :
+        <pre>
+        expect(....).not.toBe(....)
+        expect(....).toEqual(....)
+        </pre>
+<br />
+1. OBJECTIF B : Réussir à router un appel http://localhost:8000/velib vers le fichier './public/index.html'
+    - Test unitaire pour concevoir et vérifier l'implémenttion du fichier **server_0.js** 
+        1. Le server est bien lancé et la requete http://localhost:8000/velib renvoie un status 200
+        1. Vérification que le contenu du tag **&lt;title&gt;** est bien celui du fichier public/index.html
+        
+        - On rajoutera les lignes ci-dessous dans le fichier **spec/serverSpec.js** :
+        
+            <pre>
+            describe("Lancement d'un server et routage /velib", function() {     
+                it("Start Server on http://localhost:8000/velib and error = false", function() {       
+  
+                });    
+            
+                it("http://localhost:8000/velib body object &lt;title&gt; = ...", function() {
+  
+                });
+            });
+            </pre>
+              
+        - Pour rappel, la signature de la méthode permettant de créer un server (dans le fichier **server_0.js**) :
+        
+            <pre>        
+            http.createServer(function (request, response) {
+            
+                // Analyse du contenu de l'object **request** (récupération de l'url d'appel provenant du navigateur web)
+            
+            }).listen(8000);
+            </pre>
+        - cf. https://nodejs.org/api/http.html#http_message_url
+        <br />
+        - Côté serveur, il est nécessaire de pouvoir lire et récupérer le contenu d'un fichier ('./public/index.html')
+            - Utilisation du module **fs** (File System cf. https://nodejs.org/api/fs.html#fs_file_system)
+            - Le début du fichier **server_0.js** deviendra donc :
+                    
+            <pre>
+            var http = require('http');
+            var fs = require('fs');
+
+            http.createServer(function (request, response) {
+            
+                // Analyse du contenu de l'object **request** (récupération de l'url d'appel provenant du navigateur web)
+                
+                // Lecture et récupération du contenu du fichier cible avec la méthode fs.readFile()
+                // cf. https://nodejs.org/api/fs.html#fs_fs_readfile_file_options_callback
+                        
+            }).listen(8000);     
+            </pre>
+            
+            - Une fois récupéré, le contenu du fichier cible doit être envoyé vers le navigateur web, avec la méthode **response.end()**
+            Voir l'exemple : https://nodejs.org/en/about/
+            <br />
+        - Test Unitaire : Vérification que le contenu du tag **&lt;title&gt;** est bien celui du fichier public/index.html
+            Il existe un module permettant d'utiliser les fonctions jQuery, permettant entre autre de parser le contenu d'une page html.
+            Ce module est **cheerio** 
+            - Utilisation du module **cheerio** : 
+                - Faire <code>npm install --save-dev cheerio</code>
+                    - La documentation se trouve sur le site https://www.npmjs.com/package/cheerio
+                    - Le début du fichier **server_0.js** deviendra donc :
+                    
+                    <pre>
+                    var request = require('request');
+                    var server = require('../server_0');
+                    var cheerio = require('cheerio');
+                    </pre>
+                    - Utilisation de l'instruction **$ = cheerio.load(body);** afin de récupérer un objet JQuery de la chaine de caractère **body**
+                            - Avec l'objet **$** il sera possible d'utiliser les méthodes jQuery pour parser des tags html
+                    
+                    - Utilisation Jasmine (cf. http://jasmine.github.io/2.4/introduction.html) :
+
+                    <pre>
+                    expect(....).not.toBe(....)
+                    expect(....).toEqual(....)
+                    </pre>
